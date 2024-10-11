@@ -7,6 +7,7 @@ from select import error
 from canvas import app
 from helpers import clean_screen
 from products import render_products_screen
+from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 
 
 def login(username, password):
@@ -40,7 +41,25 @@ def render_login_screen(error_msg=None):
               ).grid(row=2, column=0)
 
 def register(**user):
-    # TODO: validations
+    if user["username"] == "" or user["password"] == "" or user["first_name"] or user["last_name"]:
+        render_register_screen(error_msg="All fields are required!")
+        return
+    if len(user["username"]) < 5:
+        render_register_screen(error_msg="Username must have at least 5 chars.")
+    if len(user["password"]) < 5:
+        render_register_screen(error_msg="Username must have at least 5 chars.")
+    pass_validation_map = {"upper": False, "lower": False, "digit": False, "special": False}
+    for char in user["password"]:
+        if char in ascii_uppercase:
+            pass_validation_map["upper"] = True
+        elif char in ascii_lowercase:
+            pass_validation_map["lower"] = True
+        elif char in digits:
+            pass_validation_map["digit"] = True
+        elif char in punctuation:
+            pass_validation_map["special"] = True
+    if not all(pass_validation_map.values()):
+        render_register_screen(error_msg="Pass must have uppercase, lowercase, digit and special char.")
 
     user.update({"products": []})
     with open("db/user_credentials_db.txt", "r+", newline="\n") as file:
