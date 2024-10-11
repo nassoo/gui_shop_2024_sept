@@ -48,11 +48,14 @@ def add_product(name, image, count):
         if name == "" or image == "" or count == "":
             render_new_product_screen(error_msg="All fields required!")
             return
+        if not count.isdigit():
+            render_new_product_screen(error_msg="Count must be a valid number")
+            return
         file.write(json.dumps({
             "id": len(file.readlines()) + 1,
             "name": name,
             "img_path": image,
-            "count": count
+            "count": int(count)
         }) + "\n")
 
     render_products_screen()
@@ -97,10 +100,7 @@ def render_products_screen():
 
     with open("db/products.txt") as file:
         products = [json.loads(p.strip()) for p in file]
-        # for p in products:
-        #     x = p["count"]
-        #     y = 5
-        # new_products = [p for p in products if p["count"] > 0]
+        products = [p for p in products if p["count"] > 0]
         products_per_line = 6
         rows_for_product = len(products[0])
         for i, product in enumerate(products):
